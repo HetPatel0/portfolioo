@@ -1,0 +1,383 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+/* ------------------------------------------------------------------
+   tweakcn / shadcn theme tokens.
+   Token VALUES are swappable with any tweakcn export — the site reads
+   only the mapped aliases below (--paper, --ink, ...), so pasting a
+   new tweakcn theme here re-skins everything including the doodles.
+------------------------------------------------------------------ */
+:root {
+  --radius: 0.625rem;
+
+  /* Dawn paper — the morning after starry night */
+  --background: #faf7ef;
+  --foreground: #1b2340;
+  --card: #faf7ef;
+  --card-foreground: #1b2340;
+  --popover: #faf7ef;
+  --popover-foreground: #1b2340;
+  --primary: #1b2340;
+  --primary-foreground: #faf7ef;
+  --secondary: #e9e6f5;
+  --secondary-foreground: #1b2340;
+  --muted: #ece9f3;
+  --muted-foreground: #5b6489;
+  --accent: #f6df9a;
+  --accent-foreground: #1b2340;
+  --destructive: #dc2626;
+  --border: #dfe3f0;
+  --input: #dfe3f0;
+  --ring: #5b6fd6;
+
+  /* Site aliases — everything below reads these, never raw tokens */
+  --drawably-stroke: var(--foreground);
+  --drawably-fill: var(--foreground);
+  --paper: var(--background);
+  --ink: var(--foreground);
+  --muted-ink: var(--muted-foreground);
+  --dots: #d3daf1;
+  --link: #2f4bd6;
+
+  font-family: Inter, system-ui, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  /* Starry night — deep space navy, starlight ink, moon-gold accents */
+  --background: #0a0f24;
+  --foreground: #ece9f7;
+  --card: #111737;
+  --card-foreground: #ece9f7;
+  --popover: #111737;
+  --popover-foreground: #ece9f7;
+  --primary: #f0c541;
+  --primary-foreground: #0a0f24;
+  --secondary: #232c5c;
+  --secondary-foreground: #ece9f7;
+  --muted: #1a2145;
+  --muted-foreground: #9aa3c7;
+  --accent: #2b3770;
+  --accent-foreground: #f0c541;
+  --destructive: #f87171;
+  --border: rgba(180, 190, 255, 0.16);
+  --input: rgba(180, 190, 255, 0.2);
+  --ring: #8b93e8;
+
+  --dots: rgba(190, 200, 255, 0.16);
+  --link: #9db4ff;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* View-transition reveal for the theme switch (the hand icon still pops
+   via .theme-icon.swap). Falls back to an instant flip where unsupported. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
+}
+
+::view-transition-new(root) {
+  animation-name: theme-reveal;
+  transform-origin: calc(100% - 90px) 36px;
+}
+
+@keyframes theme-reveal {
+  from {
+    clip-path: circle(0% at calc(100% - 90px) 36px);
+  }
+  to {
+    clip-path: circle(150% at calc(100% - 90px) 36px);
+  }
+}
+
+a {
+  color: var(--link);
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  background-image: radial-gradient(var(--dots) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+#root {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 20px 80px;
+  position: relative;
+  z-index: 1;
+}
+
+/* Twinkling starfield — visible in dark (starry night) mode only */
+.starfield {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  display: none;
+  overflow: hidden;
+}
+
+:root[data-theme="dark"] .starfield {
+  display: block;
+}
+
+.starfield i {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border-radius: 9999px;
+  animation: star-twinkle var(--twinkle-dur, 3s) ease-in-out infinite alternate;
+}
+
+@keyframes star-twinkle {
+  from {
+    opacity: 0.2;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .starfield {
+    display: none;
+  }
+}
+
+/* Lenis smooth-scroll base styles (required by the library) */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.hand {
+  font-family: "Drawably Pen", Inter, sans-serif;
+}
+
+nav.nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 0;
+  position: sticky;
+  top: 0;
+  background: color-mix(in srgb, var(--paper) 88%, transparent);
+  backdrop-filter: blur(6px);
+  z-index: 10;
+}
+
+.nav-links {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.theme-icon {
+  display: inline-flex;
+  vertical-align: -3px;
+}
+
+.theme-icon svg {
+  width: 16px;
+  height: 16px;
+}
+
+.theme-icon.swap {
+  animation: theme-pop 0.5s ease;
+}
+
+@keyframes theme-pop {
+  from {
+    transform: rotate(-120deg) scale(0.5);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(0) scale(1);
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-icon.swap {
+    animation: none;
+  }
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.01s;
+  }
+}
+
+.hero {
+  text-align: center;
+  padding: 64px 0 32px;
+}
+
+.hero h1 {
+  font-family: "Drawably Pen", Inter, sans-serif;
+  font-size: clamp(2.4rem, 6vw, 4rem);
+  line-height: 1.05;
+  margin: 0 0 16px;
+}
+
+.hero p {
+  color: var(--muted-ink);
+  font-size: 1.15rem;
+  max-width: 560px;
+  margin: 0 auto 24px;
+}
+
+.hero-cta {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+section.block {
+  margin-top: 40px;
+  scroll-margin-top: 90px;
+}
+
+.section-title {
+  font-family: "Drawably Pen", Inter, sans-serif;
+  font-size: 1.8rem;
+  margin: 0 0 16px;
+}
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 720px) {
+  .grid-2,
+  .grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
+
+.card-pad {
+  padding: 20px;
+}
+
+.badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.badges .drawably-badge {
+  font-size: 13px;
+  background: var(--paper);
+}
+
+.social-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.social-row a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.social-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  font-size: 0.9rem;
+  white-space: nowrap;
+}
+
+.social-chip svg {
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+
+form.contact {
+  display: grid;
+  gap: 12px;
+  max-width: 520px;
+}
+
+.avatar {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 3px solid var(--ink);
+  display: block;
+  margin: 0 auto 8px;
+}
+
+footer {
+  margin-top: 56px;
+  text-align: center;
+  color: var(--muted-ink);
+  font-size: 0.9rem;
+}
