@@ -35,6 +35,7 @@
   /* Site aliases — everything below reads these, never raw tokens */
   --drawably-stroke: var(--foreground);
   --drawably-fill: var(--foreground);
+  --drawably-paper: var(--background);
   --paper: var(--background);
   --ink: var(--foreground);
   --muted-ink: var(--muted-foreground);
@@ -70,6 +71,7 @@
 
   --dots: rgba(190, 200, 255, 0.16);
   --link: #9db4ff;
+  --drawably-paper: var(--background);
   color-scheme: dark;
 }
 
@@ -210,7 +212,7 @@ nav.nav {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20px 0;
+  padding: 16px 0;
   position: sticky;
   top: 0;
   background: color-mix(in srgb, var(--paper) 88%, transparent);
@@ -218,11 +220,60 @@ nav.nav {
   z-index: 10;
 }
 
+/* Minimal navbar: plain text brand + links, one quiet icon button.
+   Sketch boxes are reserved for page CTAs so the nav stops shouting. */
+.brand {
+  border: 0;
+  background: none;
+  padding: 4px 2px;
+  cursor: pointer;
+  color: var(--ink);
+  font-size: 1.15rem;
+}
+
 .nav-links {
   display: flex;
-  gap: 8px;
+  gap: 4px;
   flex-wrap: wrap;
   align-items: center;
+}
+
+.nav-link {
+  border: 0;
+  background: none;
+  padding: 8px 12px;
+  cursor: pointer;
+  color: var(--muted-ink);
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: color 150ms ease, background 150ms ease;
+}
+
+.nav-link:hover {
+  color: var(--ink);
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+}
+
+.nav-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  margin-left: 4px;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: none;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background 150ms ease, transform 150ms ease;
+}
+
+.nav-icon:hover {
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  transform: translateY(-1px);
 }
 
 .theme-icon {
@@ -286,15 +337,40 @@ nav.nav {
   flex-wrap: wrap;
 }
 
+.hero-meta {
+  color: var(--muted-ink);
+  font-size: 0.95rem;
+}
+
+.contact-line {
+  margin-bottom: 16px;
+  color: var(--muted-ink);
+}
+
 section.block {
   margin-top: 40px;
   scroll-margin-top: 90px;
 }
 
 .section-title {
-  font-family: "Drawably Pen", Inter, sans-serif;
-  font-size: 1.8rem;
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-size: 1.6rem;
   margin: 0 0 16px;
+}
+
+.card-title {
+  font-family: Inter, system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-size: 1.05rem;
+  margin: 0 0 8px;
+}
+
+.card-desc {
+  color: var(--muted-ink);
+  margin: 0 0 4px;
 }
 
 .grid-2 {
@@ -303,15 +379,8 @@ section.block {
   gap: 16px;
 }
 
-.grid-3 {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 16px;
-}
-
 @media (max-width: 720px) {
-  .grid-2,
-  .grid-3 {
+  .grid-2 {
     grid-template-columns: 1fr;
   }
 }

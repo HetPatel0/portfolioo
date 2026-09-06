@@ -12,7 +12,6 @@ import {
   DrawablyHighlight,
   DrawablyCircle,
 } from 'drawably/react'
-import { Badge } from '@/components/ui/badge'
 import Starfield from '@/components/Starfield'
 
 const PROFILE = {
@@ -49,31 +48,31 @@ const SKILLS = [
 const PROJECTS = [
   {
     title: 'Doc Analysis — Chat with PDF',
-    desc: 'RAG pipeline over documents: ingestion, chunking, vector embeddings, semantic search + context-aware QA with a Next.js chat frontend.',
+    desc: 'RAG chat over PDFs: chunking, embeddings, semantic search + grounded answers.',
     link: 'https://github.com/HetPatel0/doc_analysis',
     tech: 'Python · LangChain · vector-db · Next.js',
   },
   {
     title: 'Cardiovascular Disease Detector',
-    desc: 'Random Forest model with engineered features (BMI, age-group, BP category, pulse pressure). FastAPI endpoint with probability + risk-level mapping.',
+    desc: 'Random Forest with engineered features, served via FastAPI with risk levels.',
     link: 'https://github.com/HetPatel0/CardioCheck',
     tech: 'Python · scikit-learn · FastAPI',
   },
   {
     title: 'Expense Tracker (StacksUp)',
-    desc: 'Full-stack expense manager with auth, Postgres schemas, and AI-powered spending insights, monthly summaries and budget tips.',
+    desc: 'Expense manager with auth, Postgres and AI spending summaries.',
     link: 'https://github.com/HetPatel0/Expense_tracker',
     tech: 'Next.js · PostgreSQL · Auth · AI summaries',
   },
   {
     title: 'ML Simulations',
-    desc: 'Interactive platform visualising ML algorithms in real time — regressions, gradient descent, SVR, kernel methods — plus articles and parameter tables.',
+    desc: 'Interactive visualisations of regressions, gradient descent and kernels.',
     link: 'https://github.com/HetPatel0/ml_simulation',
     tech: 'Next.js 16 · TypeScript · Tailwind · shadcn',
   },
   {
     title: 'Talkd (SecureTerm)',
-    desc: 'End-to-end encrypted P2P terminal chat in Go — no servers, no accounts. X25519 + ChaCha20-Poly1305 over direct TCP.',
+    desc: 'E2E-encrypted P2P terminal chat in Go. No servers, no accounts.',
     link: 'https://github.com/HetPatel0/Talkd',
     tech: 'Go · P2P · E2E encryption',
   },
@@ -181,11 +180,26 @@ export default function App() {
     }
   }
 
-  const fakeSend = (e: React.FormEvent) => {
+  const scrollToTop = () => {
+    if (lenisRef.current) {
+      lenisRef.current.scrollTo(0, { duration: 1.4 })
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }
+
+  const fakeSend = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (sendState === 'loading') return
+    const data = new FormData(e.currentTarget)
+    const name = String(data.get('name') ?? '')
+    const email = String(data.get('email') ?? '')
+    const message = String(data.get('message') ?? '')
+    const subject = encodeURIComponent(`Portfolio contact from ${name || 'a visitor'}`)
+    const body = encodeURIComponent(`${message}\n\n— ${name} (${email})`)
     setSendState('loading')
-    setTimeout(() => setSendState('success'), 1200)
+    window.location.href = `mailto:${PROFILE.email}?subject=${subject}&body=${body}`
+    setTimeout(() => setSendState('success'), 600)
     setTimeout(() => setSendState('idle'), 3500)
   }
 
@@ -193,23 +207,22 @@ export default function App() {
     <>
       <Starfield />
       <nav className="nav">
-        <DrawablyBadge>
-          <span className="hand" style={{ padding: '4px 8px', display: 'inline-block' }}>
-            ✏️ {PROFILE.name}
-          </span>
-        </DrawablyBadge>
+        <button type="button" className="brand" onClick={scrollToTop} aria-label="Back to top">
+          <span className="hand">Bhuva Het</span>
+        </button>
         <div className="nav-links">
-          <DrawablyButton variant="outline" onClick={() => scrollTo('about')}>
+          <button type="button" className="nav-link" onClick={() => scrollTo('about')}>
             About
-          </DrawablyButton>
-          <DrawablyButton variant="outline" onClick={() => scrollTo('projects')}>
+          </button>
+          <button type="button" className="nav-link" onClick={() => scrollTo('projects')}>
             Work
-          </DrawablyButton>
-          <DrawablyButton variant="solid" onClick={() => scrollTo('contact')}>
+          </button>
+          <button type="button" className="nav-link" onClick={() => scrollTo('contact')}>
             Contact
-          </DrawablyButton>
-          <DrawablyButton
-            variant="outline"
+          </button>
+          <button
+            type="button"
+            className="nav-icon"
             onClick={toggleTheme}
             aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
             title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
@@ -217,11 +230,11 @@ export default function App() {
             <span key={theme} className="theme-icon swap">
               {theme === 'light' ? MoonIcon : SunIcon}
             </span>
-          </DrawablyButton>
+          </button>
         </div>
       </nav>
 
-      <header className="hero">
+      <header className="hero" id="top">
         <img src="/avatar.jpg" alt="Bhuva Het" className="avatar" width={120} height={120} />
         <h1>
           Hi, I&apos;m <DrawablyCircle>{PROFILE.name}</DrawablyCircle>
@@ -230,8 +243,8 @@ export default function App() {
           <DrawablyHighlight>{PROFILE.role}</DrawablyHighlight>{' '}
           — <DrawablyUnderline>{PROFILE.tagline}</DrawablyUnderline>
         </p>
-        <p style={{ color: '#64748b', fontSize: '0.95rem' }}>
-          📍 {PROFILE.location} · 🎓 B.Tech CSE, Darshan University (2027)
+        <p className="hero-meta">
+          {PROFILE.location} · B.Tech CSE, Darshan University (2027)
         </p>
         <div className="hero-cta">
           <DrawablyButton variant="solid" onClick={() => scrollTo('projects')}>
@@ -244,9 +257,6 @@ export default function App() {
             Get in touch
           </DrawablyButton>
         </div>
-        <p style={{ marginTop: 12, fontSize: '0.85rem', color: 'var(--muted-ink)' }}>
-          Hover any sketch to re-sketch — every mount is a fresh pen stroke.
-        </p>
       </header>
 
       <DrawablyDivider />
@@ -256,7 +266,7 @@ export default function App() {
         <div className="grid-2">
           <DrawablyCard>
             <div className="card-pad">
-              <h3 className="hand">👋 Bio</h3>
+              <h3 className="card-title">Bio</h3>
               <p>{PROFILE.about}</p>
               <div className="social-row">
                 <a href={PROFILE.github} target="_blank" rel="noreferrer" aria-label="GitHub">
@@ -284,7 +294,7 @@ export default function App() {
           </DrawablyCard>
           <DrawablyCard>
             <div className="card-pad">
-              <h3 className="hand">🛠 Stack</h3>
+              <h3 className="card-title">Stack</h3>
               <DrawablyList>
                 <li>Languages — Python, Java, TypeScript, JavaScript, SQL</li>
                 <li>ML — scikit-learn, PyTorch, OpenCV, RAG, embeddings</li>
@@ -304,17 +314,17 @@ export default function App() {
 
       <section id="projects" className="block">
         <h2 className="section-title">Projects</h2>
-        <div className="grid-3">
+        <div className="grid-2">
           {PROJECTS.map((p) => (
             <DrawablyCard key={p.title}>
               <div className="card-pad">
-                <h3 className="hand">{p.title}</h3>
-                <p style={{ color: 'var(--muted-ink)', minHeight: 48 }}>{p.desc}</p>
-                <div className="mt-2 flex flex-wrap gap-1.5">
+                <h3 className="card-title">{p.title}</h3>
+                <p className="card-desc">{p.desc}</p>
+                <div className="badges">
                   {p.tech.split('·').map((t) => (
-                    <Badge key={t.trim()} variant="secondary">
-                      {t.trim()}
-                    </Badge>
+                    <DrawablyBadge key={t.trim()} variant="outline">
+                      <span style={{ padding: '2px 8px', display: 'inline-block' }}>{t.trim()}</span>
+                    </DrawablyBadge>
                   ))}
                 </div>
                 <div style={{ marginTop: 12 }}>
@@ -335,21 +345,21 @@ export default function App() {
         <h2 className="section-title">Contact</h2>
         <DrawablyCard>
           <div className="card-pad">
-            <p style={{ marginBottom: 16 }}>
-              📧 {PROFILE.email} · 📍 {PROFILE.location}
+            <p className="contact-line">
+              {PROFILE.email} · {PROFILE.location}
             </p>
             <form className="contact" onSubmit={fakeSend}>
               <label>
                 Name
-                <DrawablyInput placeholder="Your name" required />
+                <DrawablyInput name="name" placeholder="Your name" required />
               </label>
               <label>
                 Email
-                <DrawablyInput type="email" placeholder="you@company.com" required />
+                <DrawablyInput name="email" type="email" placeholder="you@company.com" required />
               </label>
               <label>
                 Message
-                <DrawablyTextarea rows={4} placeholder="Hi Het! I saw your portfolio…" required />
+                <DrawablyTextarea name="message" rows={4} placeholder="Hi Het! I saw your portfolio…" required />
               </label>
               <div>
                 <DrawablyButton variant="solid" state={sendState} type="submit">
@@ -361,7 +371,7 @@ export default function App() {
                 </DrawablyButton>
               </div>
               <small style={{ color: 'var(--muted-ink)' }}>
-                Prefer email? Write to {PROFILE.email} — or grab my{' '}
+                This opens your email app addressed to {PROFILE.email} — or grab my{' '}
                 <a href={PROFILE.resume} target="_blank" rel="noreferrer">
                   resume (PDF)
                 </a>
@@ -375,7 +385,7 @@ export default function App() {
       <footer>
         <DrawablyDivider />
         <p>
-          Built with <span className="hand">drawably</span> ✏️ —{' '}
+          Built with <span className="hand">drawably</span> —{' '}
           <a href={PROFILE.github}>GitHub</a> · <a href={PROFILE.linkedin}>LinkedIn</a> ·{' '}
           <a href={PROFILE.x}>X</a>
         </p>
